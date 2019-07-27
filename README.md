@@ -9,4 +9,4 @@ This project demonstrates the operation of the calibration module of two cameras
 
 ## Other
 
-1. [The ./data folder contains an example of the output file with the calibration parameters of two cameras](data)
+1. [The "data" folder contains an example of the output file with the calibration parameters of two cameras](data)
