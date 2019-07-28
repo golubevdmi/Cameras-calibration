@@ -2,6 +2,8 @@
 
 This project demonstrates the operation of the calibration module of two cameras.
 
+![Process stereo](data/gif/calib.gif)
+
 ## Requirements
 
 1. OpenCV 4.1.0.
