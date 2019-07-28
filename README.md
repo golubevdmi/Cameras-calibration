@@ -10,6 +10,10 @@
 2. You must have two video cameras connected or a recorded video with a chessboard clearly visible.
 3. Chessboard, if there is no finished video
 
+## Sample
+
+The sample allows you to record video from one or two cameras or use the finished video, then perform calibration
+
 ## Other
 
 1. [The "data/params" folder contains an example of the output file with the calibration parameters of two cameras](data/params)
