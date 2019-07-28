@@ -30,8 +30,8 @@ void StereoCalibration::CalibrationByVideo(std::string videoPath)
 		cap >> frame;
 		if (frame.empty())	break;
 
-		cv::Mat left = frame(cv::Rect(0, 0, frame.cols / 2, frame.rows)).clone();
-		cv::Mat right = frame(cv::Rect(frame.cols / 2, 0, frame.cols / 2, frame.rows)).clone();
+		cv::Mat left = frame(cv::Rect(0, 0, frame.cols / 2, frame.rows));
+		cv::Mat right = frame(cv::Rect(frame.cols / 2, 0, frame.cols / 2, frame.rows));
 
 		// Search for corner points by pressing a key
 		if (key == ' ')
@@ -47,15 +47,11 @@ void StereoCalibration::CalibrationByVideo(std::string videoPath)
 				imagePoints1.push_back(corners1);
 				imagePoints2.push_back(corners2);
 
-				cv::Mat drawStereoCorn = frame.clone();
-				cv::Mat drawCorn1 = drawStereoCorn(cv::Rect(0, 0, drawStereoCorn.cols / 2, drawStereoCorn.rows));
-				cv::Mat drawCorn2 = drawStereoCorn(cv::Rect(drawStereoCorn.cols / 2, 0, drawStereoCorn.cols / 2, drawStereoCorn.rows));
+				cv::drawChessboardCorners(left, m_patternSize, corners1, found1);
+				cv::drawChessboardCorners(right, m_patternSize, corners2, found2);
 
-				cv::drawChessboardCorners(drawCorn1, m_patternSize, corners1, found1);
-				cv::drawChessboardCorners(drawCorn2, m_patternSize, corners2, found2);
-
-				cv::namedWindow(corners_winname, cv::WINDOW_FREERATIO);
-				cv::imshow(corners_winname, drawStereoCorn);
+				cv::imshow(stereo_winname, frame);
+				cv::waitKey(500);
 
 				std::cout << ">> Corners Save: " << counter << std::endl;
 				counter++;

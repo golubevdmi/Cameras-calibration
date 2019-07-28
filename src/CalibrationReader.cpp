@@ -6,28 +6,32 @@ using namespace calib;
 // Show intrinsic and extrinsic params
 void StereoCalibrationReader::show()
 {
-	std::cout << "ImageSize: "                  << imageSize <<
-		       "\nCamera matrix 1:\n"           << camera_matrix1 <<
-		       "\nCamera matrix 2:\n"           << camera_matrix2 <<
-		       "\nDistortion coefficients 1:\n" << distortion_coeffs1 <<
-		       "\nDistortion coefficients 2:\n" << distortion_coeffs2 <<
-		       "\nRotate:\n"                    << Rotate <<
-		       "\nT: "                          << T <<
-		       "\nEssential:\n"                 << E <<
-		       "\nFundamental:\n"               << F << std::endl;
+	std::cout << "\n\nImageSize: " << "\n_____________\n\n" << imageSize
+		<< "\n\n\nCamera matrix 1:" << "\n________________\n\n" << camera_matrix1
+		<< "\n\n\nCamera matrix 2:" << "\n________________\n\n" << camera_matrix2
+		<< "\n\n\nDistortion coefficients 1:" << "\n__________________________\n\n" << distortion_coeffs1
+		<< "\n\n\nDistortion coefficients 2:" << "\n__________________________\n\n" << distortion_coeffs2
+		<< "\n\n\nRotate:" << "\n_______\n\n" << Rotate
+		<< "\n\n\nT: " << "\n____\n\n" << T.t()
+		<< "\n\n\nEssential:" << "\n__________\n\n" << E
+		<< "\n\n\nFundamental:" << "\n____________\n\n" << F
+		<< std::endl;
 
 	std::cout << std::endl << std::endl;
 
-	std::cout << "R1:\n" << R1 <<
-		       "\nR2:\n" << R2 <<
-		       "\nP1:\n" << P1 <<
-			   "\nP2:\n" << P2 <<
-			   "\nQ:\n" << Q << std::endl;
+	if (!R1.empty() && !R2.empty() && !P1.empty() && !P2.empty() && !Q.empty())
+	{
+		std::cout << "R1:\n" << R1 <<
+			"\nR2:\n" << R2 <<
+			"\nP1:\n" << P1 <<
+			"\nP2:\n" << P2 <<
+			"\nQ:\n" << Q << std::endl;
 
-	std::cout << std::endl << std::endl;
+		std::cout << std::endl << std::endl;
 
-	std::cout << "Baseline: " << baseline <<
-		       "\nFocalLenght: " << focallenght << std::endl;
+		std::cout << "Baseline: " << baseline <<
+			"\nFocalLenght: " << focallenght << std::endl;
+	}
 }
 
 //
@@ -261,6 +265,75 @@ bool StereoCalibrationReader::computeFocalLenght()
 	}
 
 	focallenght = Q.at<std::double_t>(2, 3);
+
+	return true;
+}
+
+
+
+
+//
+// Show intrinsic and extrinsic params
+void SingleCalibrationReader::show()
+{
+	std::cout << "ImageSize: " << imageSize
+		<< "\nCamera matrix:\n" << camera_matrix
+		<< "\nDistortion Coefficients:\n" << distortion_coeffs
+		<< std::endl;
+}
+
+//
+// Reading intrinsic and extrinsic params
+bool SingleCalibrationReader::read()
+{
+	std::cout << ">> Download stereo calibrate parameters" << std::endl;
+
+	if (!m_fsParams.isOpened())
+	{
+		std::cout << "Stereo Params not received" << std::endl;
+		return false;
+	}
+
+	m_fsParams["UsedFramework"] >> UsedFramework;
+
+	if (UsedFramework == "MATLAB")
+		m_isReceived = readAsMatlab();
+	else if (UsedFramework == "OPENCV")
+		m_isReceived = readAsOpenCV();
+	else
+		std::cout << "UsedFramework: Framework not defined" << std::endl;
+
+	if (!m_isReceived)
+	{
+		std::cout << "Stereo params not received" << std::endl;
+		return false;
+	}
+
+
+	return true;
+}
+// --TODO
+bool SingleCalibrationReader::readAsMatlab()
+{
+	// ImageSize
+	m_fsParams["ImageSize"] >> imageSize;
+
+	if (imageSize.width < imageSize.height)
+	{
+		std::uint32_t tmp = imageSize.height;
+		imageSize.height = imageSize.width;
+		imageSize.width = tmp;
+	}
+
+	return true;
+}
+bool SingleCalibrationReader::readAsOpenCV()
+{
+	m_fsParams["imageSize"] >> imageSize;
+
+	// Intrinsic params
+	m_fsParams["M"] >> camera_matrix;
+	m_fsParams["D"] >> distortion_coeffs;
 
 	return true;
 }

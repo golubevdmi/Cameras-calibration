@@ -12,7 +12,7 @@ void SingleCalibration::CalibrationByVideo(std::string videoPath)
 
 	cv::Mat frame;
 	cv::VideoCapture cap(videoPath);
-	CV_Assert(!cap.isOpened());
+	CV_Assert(cap.isOpened());
 
 	cap >> frame;
 	imageSize = frame.size();
@@ -56,10 +56,13 @@ void SingleCalibration::CalibrationByVideo(std::string videoPath)
 			}
 		}
 
-		key = cv::waitKey(pause);
 
 		cv::namedWindow(single_winname, cv::WINDOW_FREERATIO);
 		cv::imshow(single_winname, frame);
+
+		key = cv::waitKey(pause);
+		if (key == 27)
+			break;
 	}
 
 	cv::destroyWindow(single_winname);
@@ -164,6 +167,17 @@ void SingleCalibration::calibrate(std::vector<std::vector<cv::Point2f>>& imagePo
 // --TODO
 void SingleCalibration::writeParams()
 {
+	cv::FileStorage fs(m_output, cv::FileStorage::WRITE);
+
+	fs << "UsedFramework" << "OPENCV";
+
+	fs << "imageSize" << imageSize;
+
+	// Intrinsic params
+	fs << "M" << camera_matrix;
+	fs << "D" << distortion_coeffs;
+
+	fs.release();
 
 	return;
 }

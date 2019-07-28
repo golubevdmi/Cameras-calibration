@@ -194,10 +194,24 @@ namespace calib
 	class  SingleCalibrationReader : public CalibrationReader, private SingleCamera
 	{
 	public:
+		SingleCalibrationReader(std::string filename) :
+			SingleCamera(),
+			CalibrationReader(filename)
+		{}
+		~SingleCalibrationReader() {}
 
-	private:
+		/// Reading intrinsic and extrinsic params
+		virtual bool read() final;
+
+		/// Show intrinsic and extrinsic params
+		virtual void show() final;
+
+	protected:
+		virtual bool readAsOpenCV() final;
+		virtual bool readAsMatlab() final;
 
 	};
+
 	class  StereoCalibrationReader : public CalibrationReader, private StereoCamera
 	{
 	public:
